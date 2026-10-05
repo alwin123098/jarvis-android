@@ -73,7 +73,29 @@ All are permissively licensed (Apache-2.0 / MIT). Jarvis ships **no** weights.
   far less — it runs comfortably on a 3 GB phone).
 - To build: Android Studio (or the Android SDK + NDK) and JDK 17.
 
-## Build
+## Quick start (clone → running)
+
+**Option A — no toolchain at all.** The repo builds an installable APK in the
+cloud. Open the **Actions** tab → **Build APK** → newest run → download the
+**jarvis-debug-apk** artifact → install it on your phone. Push a tag
+(`git tag v1.0.0 && git push --tags`) and the APK is attached to a Release.
+
+**Option B — one command from a clone.** This finds a JDK, fetches the native
+engines, builds the APK, and installs it to a connected phone:
+
+```bash
+git clone https://github.com/alwin123098/jarvis-android.git jarvis
+cd jarvis
+bash scripts/bootstrap.sh
+```
+
+(The trailing `jarvis` names the folder `jarvis`. `make start` does the same
+thing on macOS/Linux.)
+
+Once installed, open **Jarvis**, choose a model, and tap **Download** — after
+that it runs fully offline.
+
+## Build (manual steps)
 
 > Stuck on `JAVA_HOME`, a missing SDK/NDK, or an exec-bit error? See
 > [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
