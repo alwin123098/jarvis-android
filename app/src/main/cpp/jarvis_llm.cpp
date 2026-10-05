@@ -1,5 +1,5 @@
 // JNI bridge to llama.cpp for the Jarvis offline LLM.
-// Pinned against llama.cpp tag b3743 (classic llama.h API).
+// Pinned against llama.cpp tag b4211 (classic llama.h API).
 #include <jni.h>
 #include <android/log.h>
 

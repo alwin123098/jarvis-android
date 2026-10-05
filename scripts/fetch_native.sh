@@ -5,10 +5,14 @@
 #   llama.cpp   -> GGUF transformer inference (the "brain")
 #   whisper.cpp -> speech-to-text
 #
+# Version note: whisper.cpp v1.7.4's whisper.h includes ggml-cpu.h, which only
+# exists in newer ggml. llama.cpp b4211 provides it, so both share one ggml
+# build (whisper.cpp reuses the ggml target when one already exists).
+#
 # Usage:  ./scripts/fetch_native.sh
 set -euo pipefail
 
-LLAMA_TAG="b3743"
+LLAMA_TAG="b4211"
 WHISPER_TAG="v1.7.4"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -22,7 +26,10 @@ clone_pinned() {
     return
   fi
   echo "  -> cloning $dir @ $tag"
-  git clone --depth 1 --branch "$tag" "$url" "$DEST/$dir"
+  git clone --depth 1 --branch "$tag" --recurse-submodules --shallow-submodules \
+    "$url" "$DEST/$dir"
+  # Safety net: whisper.cpp vendors ggml as a submodule; make sure it is present.
+  git -C "$DEST/$dir" submodule update --init --recursive --depth 1 || true
 }
 
 echo "Fetching native engines into $DEST"

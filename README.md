@@ -122,7 +122,7 @@ The APK is at `app/build/outputs/apk/debug/app-debug.apk`.
 ### 2. Full build with the native engine (real inference)
 
 ```bash
-# Vendors llama.cpp (pinned tag b3743) and whisper.cpp (v1.7.4)
+# Vendors llama.cpp (pinned tag b4211) and whisper.cpp (v1.7.4)
 ./scripts/fetch_native.sh
 
 # Build with native enabled

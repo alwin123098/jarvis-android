@@ -36,7 +36,17 @@ if(EXISTS ${THIRD_PARTY}/whisper.cpp/CMakeLists.txt)
     set(WHISPER_BUILD_SERVER OFF CACHE BOOL "" FORCE)
     add_subdirectory(${THIRD_PARTY}/whisper.cpp ${CMAKE_BINARY_DIR}/whisper.cpp)
 
+    # whisper.cpp reuses llama.cpp's ggml target (its CMake guards with
+    # `if (NOT TARGET ggml)`). Both pins provide ggml-cpu.h, so they share one
+    # ggml build. Point whisper's compile at llama's ggml headers explicitly so
+    # whisper.h's `#include "ggml-cpu.h"` always resolves.
+    target_include_directories(whisper PRIVATE
+        ${THIRD_PARTY}/llama.cpp/ggml/include
+        ${THIRD_PARTY}/llama.cpp/ggml/src)
+
     add_library(jarvis_whisper SHARED jarvis_whisper.cpp)
-    target_include_directories(jarvis_whisper PRIVATE ${THIRD_PARTY}/whisper.cpp/include ${THIRD_PARTY}/whisper.cpp/ggml/include)
+    target_include_directories(jarvis_whisper PRIVATE
+        ${THIRD_PARTY}/whisper.cpp/include
+        ${THIRD_PARTY}/llama.cpp/ggml/include)
     target_link_libraries(jarvis_whisper PRIVATE whisper android log)
 endif()
