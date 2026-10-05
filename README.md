@@ -75,6 +75,9 @@ All are permissively licensed (Apache-2.0 / MIT). Jarvis ships **no** weights.
 
 ## Build
 
+> Stuck on `JAVA_HOME`, a missing SDK/NDK, or an exec-bit error? See
+> [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
+
 ### 1. Quick UI-only build (no native engine)
 
 This compiles in seconds and lets you see the interface. Chat/voice will report
@@ -84,9 +87,10 @@ that the native engine is missing.
 git clone https://github.com/alwin123098/jarvis-android.git
 cd jarvis-android
 
-# Make the wrapper and helper scripts executable (the executable bit is not
-# always preserved on checkout):
-chmod +x gradlew scripts/fetch_native.sh
+# If the Gradle wrapper JAR is not present (it is a binary and may be absent
+# from a source checkout), generate it once with a local Gradle install:
+#   gradle wrapper --gradle-version 8.9
+# Opening the project in Android Studio also creates it automatically.
 
 ./gradlew assembleDebug
 ```
@@ -96,9 +100,8 @@ The APK is at `app/build/outputs/apk/debug/app-debug.apk`.
 ### 2. Full build with the native engine (real inference)
 
 ```bash
-# Vendors llama.cpp (pinned tag b3743) and whisper.cpp (v1.7.4).
-# Run it through `bash` so it works even if the executable bit was lost:
-bash scripts/fetch_native.sh
+# Vendors llama.cpp (pinned tag b3743) and whisper.cpp (v1.7.4)
+./scripts/fetch_native.sh
 
 # Build with native enabled
 ./gradlew assembleDebug -Pjarvis.buildNative=true
