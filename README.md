@@ -9,10 +9,12 @@ spoken with the device's built-in offline text-to-speech engine.
 
 > **About the "10 MB" goal — the honest version.** A language model's weights
 > cannot fit in 10 MB; the smallest usable chat model is ~400 MB. What *is*
-> tiny is the **app**: the APK (UI + voice + inference engine) is in the
-> ~10–15 MB range. On first launch Jarvis downloads the model files you choose
-> from the Hugging Face Hub, and from then on everything runs offline. This is
-> the only way to have both a small install and a real assistant.
+> small is the **app**: a release APK (UI + voice + both native engines, arm64
+> only) lands in the ~10–15 MB range. The debug APK is larger (~28 MB) because
+> it carries two ABIs and debug symbols. On first launch Jarvis downloads the
+> model files you choose from the Hugging Face Hub, and from then on everything
+> runs offline. This is the only way to have both a small install and a real
+> assistant.
 
 ---
 
