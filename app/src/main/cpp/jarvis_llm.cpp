@@ -33,14 +33,32 @@ inline JarvisSession * as_session(jlong handle) {
     return reinterpret_cast<JarvisSession *>(handle);
 }
 
+// Build a batch with explicit positions for a single sequence (seq_id 0).
+// llama.cpp b4211's llama_batch_get_one no longer takes positions, so we
+// construct the batch ourselves and set pos/seq_id explicitly.
+llama_batch make_batch(const llama_token * toks, int32_t n, int32_t start_pos) {
+    llama_batch batch = llama_batch_init(n, 0, 1);
+    for (int32_t j = 0; j < n; ++j) {
+        batch.token[j]     = toks[j];
+        batch.pos[j]       = start_pos + j;
+        batch.n_seq_id[j]  = 1;
+        batch.seq_id[j][0] = 0;
+        batch.logits[j]    = 0;
+    }
+    batch.n_tokens = n;
+    batch.logits[n - 1] = 1; // only the last position needs logits
+    return batch;
+}
+
 // Decode a run of tokens, chunked to respect n_batch.
 int decode_tokens(JarvisSession * s, std::vector<llama_token> & tokens, int32_t start_pos) {
     int32_t n_past = start_pos;
     const int32_t n = static_cast<int32_t>(tokens.size());
     for (int32_t i = 0; i < n; i += s->n_batch) {
         const int32_t chunk = std::min(s->n_batch, n - i);
-        llama_batch batch = llama_batch_get_one(tokens.data() + i, chunk, n_past, 0);
+        llama_batch batch = make_batch(tokens.data() + i, chunk, n_past);
         const int rc = llama_decode(s->ctx, batch);
+        llama_batch_free(batch);
         if (rc != 0) {
             LOGE("llama_decode failed at chunk %d (rc=%d)", i, rc);
             return rc;
@@ -246,8 +264,10 @@ Java_com_codotype_jarvis_llm_LlamaBridge_generate(
         env->DeleteLocalRef(jpiece);
         if (keep_going == JNI_FALSE) break;
 
-        llama_batch batch = llama_batch_get_one(&id, 1, n_past, 0);
-        if (llama_decode(s->ctx, batch) != 0) {
+        llama_batch batch = make_batch(&id, 1, n_past);
+        const int rc = llama_decode(s->ctx, batch);
+        llama_batch_free(batch);
+        if (rc != 0) {
             LOGE("decode failed during generation");
             break;
         }
