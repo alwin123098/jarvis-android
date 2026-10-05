@@ -1,0 +1,29 @@
+Jarvis knowledge pack (sample)
+==============================
+
+This folder shows the format Jarvis reads. Drop .txt, .md, or .jsonl files into
+the app's private knowledge folder and Jarvis will use them to ground its
+answers.
+
+On a debug build you can push files like this:
+
+  adb push sample_knowledge/welcome.txt /data/local/tmp/welcome.txt
+  adb shell run-as com.codotype.jarvis mkdir -p files/knowledge
+  adb shell run-as com.codotype.jarvis cp /data/local/tmp/welcome.txt files/knowledge/
+
+Then open Jarvis and tap the book icon to reload the index.
+
+Facts about Jarvis
+------------------
+
+Jarvis runs entirely on the device. It uses llama.cpp for text generation and
+whisper.cpp for speech recognition, both compiled into the app as native
+libraries. The model files are downloaded once from the Hugging Face Hub and
+then run offline.
+
+The default chat model is Qwen2.5 0.5B Instruct, quantised to Q4_K_M, which is
+about 400 MB. A larger Qwen2.5 1.5B model is available for devices with more
+memory. Speech recognition uses Whisper Tiny by default.
+
+Knowledge retrieval uses BM25, a classic ranking function, so no embeddings
+model is required and the app stays small.

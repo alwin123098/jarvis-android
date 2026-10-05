@@ -1,0 +1,19 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Vendored native sources (fetched by scripts/fetch_native.sh)
+app/src/main/cpp/third_party/
+
+# Downloaded models must never be committed
+*.gguf
+*.onnx
+*.bin
+models/downloads/

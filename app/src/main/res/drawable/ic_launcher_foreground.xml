@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A simple arc-reactor motif: concentric rings with a bright core. -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#22D3EE"
+        android:strokeWidth="2"
+        android:pathData="M54,30 a24,24 0 1,0 0.01,0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3B82F6"
+        android:strokeWidth="3"
+        android:pathData="M54,38 a16,16 0 1,0 0.01,0" />
+    <path
+        android:fillColor="#22D3EE"
+        android:pathData="M54,46 a8,8 0 1,0 0.01,0" />
+</vector>

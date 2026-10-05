@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Conversations and knowledge packs are worth backing up; models are not. -->
+    <include domain="file" path="conversation.json" />
+    <include domain="file" path="knowledge/" />
+    <exclude domain="file" path="models/" />
+</full-backup-content>
