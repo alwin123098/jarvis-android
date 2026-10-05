@@ -18,16 +18,30 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # android-actions/setup-android@v3 is broken (removed "tools" package);
+      # use the SDK the runner already provides.
+      - name: Configure Android SDK
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          CMDLINE="$(ls -d "$SDK"/cmdline-tools/*/bin 2>/dev/null | tail -1)"
+          echo "$CMDLINE" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+
+      - name: Install platform and build-tools
+        run: |
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew || true
+        run: chmod +x ./gradlew
 
       - name: Build debug APK (UI only, no native engine)
         run: ./gradlew assembleDebug --stacktrace
-        # Native inference is intentionally skipped in CI to keep runs fast and
-        # hermetic. Run scripts/fetch_native.sh locally for a full build.
+        # Native inference is intentionally skipped here to keep CI fast.
+        # Use the "Build APK" workflow (or scripts/fetch_native.sh locally) for
+        # a full build with llama.cpp + whisper.cpp.
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

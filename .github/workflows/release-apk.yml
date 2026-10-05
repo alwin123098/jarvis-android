@@ -22,13 +22,22 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # Do NOT use android-actions/setup-android@v3: it tries to install the
+      # removed "tools" package and fails. The runner already ships the SDK.
+      - name: Configure Android SDK
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          CMDLINE="$(ls -d "$SDK"/cmdline-tools/*/bin 2>/dev/null | tail -1)"
+          echo "Using cmdline-tools at: $CMDLINE"
+          echo "$CMDLINE" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
 
       - name: Install NDK and platform
         run: |
-          sdkmanager --install "ndk;26.1.10909125" "platforms;android-35" "build-tools;35.0.0"
-          yes | sdkmanager --licenses || true
+          sdkmanager --install "ndk;26.1.10909125" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
 
       - name: Make scripts executable
         run: chmod +x gradlew scripts/fetch_native.sh
